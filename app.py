@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import pickle
 from config import Config
+import pandas as pd
 import os
 
 app = Flask(__name__)
@@ -82,7 +83,29 @@ def index():
                 ]
             ]
 
-            input_data_transformed = preprocessor_model.transform(input_data)
+            columns = [
+                "Age",
+                "TypeofContact",
+                "CityTier",
+                "DurationOfPitch",
+                "Occupation",
+                "Gender",
+                "NumberOfFollowups",
+                "ProductPitched",
+                "PreferredPropertyStar",
+                "MaritalStatus",
+                "NumberOfTrips",
+                "Passport",
+                "PitchSatisfactionScore",
+                "OwnCar",
+                "Designation",
+                "MonthlyIncome",
+                "TotalVisiting",
+            ]
+
+            input_data_transformed = preprocessor_model.transform(
+                pd.DataFrame(input_data, columns=columns)
+            )
 
             prediction = xgboost_classfier_model.predict(input_data_transformed)[0]
 
@@ -106,7 +129,19 @@ def index():
             print(f"Total Visiting: {totalvisiting}")
             print(f"Prediction: {prediction}")
 
-            return render_template("index.html", prediction=prediction)
+            if prediction == 1:
+                prediction_message = (
+                    "The customer is likely to purchase the travel package."
+                )
+            else:
+                prediction_message = (
+                    "The customer is unlikely to purchase the travel package."
+                )
+
+            print(f"Prediction: {prediction}")
+            print(f"Prediction Message: {prediction_message}")
+
+            return render_template("index.html", prediction=prediction_message)
 
         except Exception as e:
             print(f"An error occurred: {e}")
