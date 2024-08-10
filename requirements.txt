@@ -5,3 +5,4 @@ seaborn
 Flask
 scikit-learn
 xgboost
+streamlit
